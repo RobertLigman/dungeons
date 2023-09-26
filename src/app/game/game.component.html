@@ -1,0 +1,21 @@
+<div *ngIf="!inDungeon">
+  <h2>Co chcesz zrobić?</h2>
+  <button (click)="startDungeonExploration()">Wyrusz do lochów</button>
+  <button (click)="restUnderTheSky()">Odpocznij pod gołym niebem</button>
+  <button (click)="stopResting()">Przerwij odpoczynek</button>
+  <!-- Możesz dodać więcej przycisków dla innych akcji -->
+</div>
+
+<div *ngIf="inDungeon">
+  <h2>Jesteś w lochach!</h2>
+  <button (click)="leaveDungeon()">zwiej z lochów</button>
+  <!-- Tutaj możemy dodać logikę wydarzeń w lochu, np. walki, znalezienie skarbów itp. -->
+</div>
+
+<!-- Sekcja logów -->
+<div>
+  <h3>Logi:</h3>
+  <ul>
+    <li *ngFor="let event of events">{{ event.description }}</li>
+  </ul>
+</div>

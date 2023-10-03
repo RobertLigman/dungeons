@@ -1,8 +1,9 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject, timer, Subscription } from 'rxjs';
-import { tap } from 'rxjs/operators';
-import {Hero} from "../interfaces/hero";
-import {DungeonService} from "./dungeon.service";
+import {Injectable} from '@angular/core';
+import {BehaviorSubject, Subscription, timer} from 'rxjs';
+import {tap} from 'rxjs/operators';
+import {GameEvent} from '../interfaces/game-event.interface';
+import {Hero} from "../interfaces/hero.interface";
+import {EventService} from './event.service';
 
 @Injectable({
   providedIn: 'root'
@@ -18,10 +19,7 @@ export class HeroService {
 
   private restSubscription?: Subscription;
 
-  constructor(private dungeonService: DungeonService) {
-    this.dungeonService.heroTookDamage.subscribe(damage => {
-      this.takeDamage(damage);
-    });
+  constructor(private eventService: EventService) {
   }
 
   startRestingUnderTheSky() {
@@ -38,7 +36,8 @@ export class HeroService {
 
           const eventDescription = `Odpoczywasz pod gołym niebem i regenerujesz ${healPerTick} punktów zdrowia.`;
           console.log("tutaj");
-          this.dungeonService.addEvent({ type: 'rest', description: eventDescription });
+          const event: GameEvent = {type: 'rest', description: eventDescription};
+          this.eventService.addEvent(event);
         } else {
           console.log("koniec odpoczynku");
           this.stopResting();

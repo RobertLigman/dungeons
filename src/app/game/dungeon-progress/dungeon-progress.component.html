@@ -1,0 +1,4 @@
+<div *ngIf="dungeon">
+  <p>Postęp eksploracji lochu: {{dungeon.explorationProgress.toFixed(2)}}/{{dungeon.maxExploration}}</p>
+  <mat-progress-bar value="{{dungeon.explorationProgress}}"></mat-progress-bar>
+</div>

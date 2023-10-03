@@ -1,9 +1,11 @@
+import {DifficultyType} from "./difficulty.type";
+
 export class Dungeon {
-  difficulty: 'easy' | 'medium' | 'hard';
+  difficulty: DifficultyType;
   explorationProgress: number;
   maxExploration: number;
 
-  constructor(difficulty: 'easy' | 'medium' | 'hard', maxExploration: number) {
+  constructor(difficulty: DifficultyType, maxExploration: number) {
     this.difficulty = difficulty;
     this.explorationProgress = 0;
     this.maxExploration = maxExploration;

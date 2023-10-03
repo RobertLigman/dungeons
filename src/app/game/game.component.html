@@ -1,21 +1,24 @@
-<div *ngIf="!inDungeon">
-  <h2>Co chcesz zrobić?</h2>
-  <button (click)="startDungeonExploration()">Wyrusz do lochów</button>
-  <button (click)="restUnderTheSky()">Odpocznij pod gołym niebem</button>
-  <button (click)="stopResting()">Przerwij odpoczynek</button>
-  <!-- Możesz dodać więcej przycisków dla innych akcji -->
-</div>
+<ng-container *ngIf="vm$ | async as vm">
+  <app-hero-stats [heroStats]="vm.hero"></app-hero-stats>
+  <app-dungeon-difficulty (difficultySelected)="onDifficultySelected($event)"></app-dungeon-difficulty>
+  <app-dungeon-progress [dungeon]="vm.dungeon"></app-dungeon-progress>
+  <div *ngIf="vm.isInDungeon===false">
+    <h2>Co chcesz zrobić?</h2>
+    <button (click)="startDungeonExploration()">Wyrusz do lochów</button>
+    <button (click)="restUnderTheSky()">Odpocznij pod gołym niebem</button>
+    <button (click)="stopResting()">Przerwij odpoczynek</button>
+  </div>
 
-<div *ngIf="inDungeon">
-  <h2>Jesteś w lochach!</h2>
-  <button (click)="leaveDungeon()">zwiej z lochów</button>
-  <!-- Tutaj możemy dodać logikę wydarzeń w lochu, np. walki, znalezienie skarbów itp. -->
-</div>
+  <div *ngIf="vm.isInDungeon">
+    <h2>Jesteś w lochach!</h2>
+    <button (click)="leaveDungeon()">zwiej z lochów</button>
+  </div>
 
-<!-- Sekcja logów -->
-<div>
-  <h3>Logi:</h3>
-  <ul>
-    <li *ngFor="let event of events">{{ event.description }}</li>
-  </ul>
-</div>
+  <!-- Sekcja logów -->
+  <div>
+    <h3>Logi:</h3>
+    <ul>
+      <li *ngFor="let event of vm.events">{{ event.description }}</li>
+    </ul>
+  </div>
+</ng-container>

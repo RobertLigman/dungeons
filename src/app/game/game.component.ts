@@ -1,9 +1,6 @@
-import { Component } from '@angular/core';
-import {DungeonService} from "../services/dungeon.service";
-import {HeroService} from "../services/hero.service";
-import {Hero} from "../interfaces/hero";
-import {GameEvent} from "../interfaces/game-event";
-import {Dungeon} from "../interfaces/dungeon";
+import {Component} from '@angular/core';
+import {GameService} from '../services/game.service';
+import {DifficultyType} from "../interfaces/difficulty.type";
 
 @Component({
   selector: 'app-game',
@@ -11,35 +8,32 @@ import {Dungeon} from "../interfaces/dungeon";
   styleUrls: ['./game.component.css']
 })
 export class GameComponent {
-  inDungeon = false;
-  hero: Hero | null = null;
-  events: GameEvent[] = [];
+  vm$ = this.gameService.vm$;
 
-  constructor(private heroService: HeroService, private dungeonService: DungeonService) {
-    this.heroService.hero$.subscribe(hero => this.hero = hero);
-    this.dungeonService.events$.subscribe(events => this.events = events);
+  //currentDungeon?: Dungeon;
+
+  onDifficultySelected(difficulty: DifficultyType) {
+    this.gameService.changeDifficulty(difficulty);
+  }
+
+
+  constructor(private gameService: GameService) {
   }
 
   startDungeonExploration() {
-    const dungeon = new Dungeon('easy', 100);
-    this.inDungeon = true;
-    this.dungeonService.exploreDungeon(dungeon);
+    this.gameService.startDungeonExploration();
   }
 
   leaveDungeon() {
-    this.dungeonService.stopExploration();
-    this.inDungeon = false;
+    this.gameService.leaveDungeon();
 
   }
 
   restUnderTheSky() {
-    console.log("Start resting")
-    this.heroService.startRestingUnderTheSky();
+    this.gameService.restUnderTheSky();
   }
 
   stopResting() {
-    this.heroService.stopResting();
+    this.gameService.stopResting();
   }
-
-  protected readonly Dungeon = Dungeon;
 }

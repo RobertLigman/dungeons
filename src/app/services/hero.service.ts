@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {BehaviorSubject, Subscription, timer} from 'rxjs';
+import {BehaviorSubject, map, Observable, Subscription, timer} from 'rxjs';
 import {tap} from 'rxjs/operators';
 import {GameEvent} from '../interfaces/game-event.interface';
 import {Hero} from "../interfaces/hero.interface";
@@ -13,16 +13,23 @@ export class HeroService {
     health: 100,
     experience: 0,
     potions: 1,
-    money: 0
+    money: 0,
+    heroResting: false
   });
   hero$ = this.heroSubject.asObservable();
-
   private restSubscription?: Subscription;
+  isHeroDead$: Observable<boolean> = this.hero$.pipe(
+    map(hero => hero.health <= 0)
+  );
 
   constructor(private eventService: EventService) {
   }
 
   startRestingUnderTheSky() {
+
+    const hero = this.heroSubject.value;
+    hero.heroResting = true;
+    console.log(this.heroSubject.value)
     console.log("serwis odpoczynek")
     const healPerTick = 5;
     const maxHealth = 100;
@@ -35,10 +42,14 @@ export class HeroService {
           this.heroSubject.next(hero);
 
           const eventDescription = `Odpoczywasz pod gołym niebem i regenerujesz ${healPerTick} punktów zdrowia.`;
+          console.log(this.heroSubject.value)
           console.log("tutaj");
           const event: GameEvent = {type: 'rest', description: eventDescription};
           this.eventService.addEvent(event);
         } else {
+          const eventDescription = `Wyzdrowiałeś i masz 100% zdrowia`;
+          const event: GameEvent = {type: 'rest', description: eventDescription};
+          this.eventService.addEvent(event);
           console.log("koniec odpoczynku");
           this.stopResting();
         }
@@ -47,6 +58,11 @@ export class HeroService {
   }
 
   stopResting() {
+    // this.heroSubject.pipe(
+    //   map(hero => ({
+    //     ...hero,
+    //     heroResting: false,
+    //   })));
     if (this.restSubscription) {
       this.restSubscription.unsubscribe();
     }
@@ -54,6 +70,7 @@ export class HeroService {
 
   takeDamage(damage: number) {
     const hero = this.heroSubject.value;
+    hero.heroResting = false;
     hero.health -= damage;
     if (hero.health < 0) {
       hero.health = 0;

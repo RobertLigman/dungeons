@@ -1,5 +1,7 @@
 <div>
-  <button (click)="selectDifficulty('easy')">Łatwy</button>
-  <button (click)="selectDifficulty('medium')">Średni</button>
-  <button (click)="selectDifficulty('hard')">Trudny</button>
+  <mat-button-toggle-group name="difficulty" aria-label="Difficulty" value="easy">
+    <mat-button-toggle value="easy" (click)="selectDifficulty(Difficulty.EASY)">Łatwy</mat-button-toggle>
+    <mat-button-toggle value="medium" (click)="selectDifficulty(Difficulty.MEDIUM)">Średni</mat-button-toggle>
+    <mat-button-toggle value="hard" (click)="selectDifficulty(Difficulty.HARD)">Trudny</mat-button-toggle>
+  </mat-button-toggle-group>
 </div>

@@ -1,31 +1,38 @@
 import {Injectable} from '@angular/core';
-import {BehaviorSubject, Subscription, timer} from 'rxjs';
+import {BehaviorSubject, combineLatest, filter, finalize, map, of, Subject, switchMap, takeUntil, timer} from 'rxjs';
 import {tap} from 'rxjs/operators';
 import {Enemy} from "../interfaces/enemy.interface";
 import {GameEvent} from "../interfaces/game-event.interface";
 import {Dungeon} from "../interfaces/dungeon.interface";
 import {HeroService} from "./hero.service";
 import {EventService} from './event.service';
-import {DifficultyType} from "../interfaces/difficulty.type";
+import {Difficulty} from "../interfaces/difficulty";
 
 @Injectable({
   providedIn: 'root'
 })
 export class DungeonService {
 
-  private difficulty$$ = new BehaviorSubject<DifficultyType>('easy');
+  private difficulty$$ = new BehaviorSubject<Difficulty>(Difficulty.EASY);
   private dungeon$$ = new BehaviorSubject<Dungeon>(new Dungeon(this.difficulty$$.value, 100));
   private isInDungeon$$ = new BehaviorSubject<Boolean>(false);
+  private triggerStopExploration$$ = new Subject<void>();
+  private dungeonPerks$$ = new BehaviorSubject<{ experience: number, gold: number }>({experience: 0, gold: 0})
+  // private explorationSubscription?: Subscription;
 
-  private explorationSubscription?: Subscription;
+  // private isHeroDead() {
+  //   let heroHp = 0;
+  //   this.heroService.hero$.subscribe(hero => heroHp = hero.health);
+  //   return heroHp <= 0;
+  // }
 
   constructor(private heroService: HeroService, private eventService: EventService) {
   }
 
+
   get dungeon$() {
     return this.dungeon$$.asObservable();
   }
-
 
   get isInDungeon$() {
     return this.isInDungeon$$.asObservable();
@@ -39,43 +46,55 @@ export class DungeonService {
 
   private getDifficultyIndicator(): number {
     switch (this.difficulty$$.value) {
-      case 'easy':
+      case Difficulty.EASY:
         return 1;
-      case 'medium':
+      case Difficulty.MEDIUM:
         return 2;
-      case 'hard':
+      case Difficulty.HARD:
         return 4;
       default:
         return 1;
     }
   }
 
+  explorationProgress$ = this.dungeon$$.pipe(
+    filter(dungeon => dungeon.explorationProgress >= 100)
+  );
+
   exploreDungeon(dungeon: Dungeon) {
-    if (this.isHeroDead()) {
-      this.stopExploration();
-      console.log("Musisz się uleczyć");
-      return;
-    }
+    // if (this.isHeroDead$) {
+    //   this.stopExploration();
+    //   console.log("Musisz się uleczyć");
+    //   return;
+    // }
     this.dungeon$$.next(dungeon);
 
-    this.explorationSubscription = timer(0, 1000).pipe(
+    // this.explorationSubscription = timer(0, 1000).pipe(
+    timer(0, 1000).pipe(
       tap(() => {
-        if (this.dungeon$$.value.explorationProgress >= 100 || this.isHeroDead()) this.stopExploration();
+        let money = 0;
+        this.explorationProgress$.subscribe(() => {
+          this.stopExploration();
+        });
         const chance = Math.random();
         if (chance <= 0.5) {
           this.triggerFight();
         } else if (chance <= 1) {
-          this.triggerTreasure();
+          money = this.triggerTreasure();
         }
         dungeon.increaseProgress(chance * 10);
-      })
+        this.dungeonPerks$$.next({
+          experience: this.dungeonPerks$$.value.experience + 10,
+          gold: this.dungeonPerks$$.value.gold + money
+        })
+      }),
+      switchMap(() => this.heroService.isHeroDead$.pipe(filter(Boolean), tap(() => {
+        console.log("Cokolwiek")
+        this.stopExploration()
+      }))),
+      takeUntil(this.triggerStopExploration$$),
+      finalize(() => console.log("zamykanie"))
     ).subscribe();
-  }
-
-  private isHeroDead() {
-    let heroHp = 0;
-    this.heroService.hero$.subscribe(hero => heroHp = hero.health);
-    return heroHp <= 0;
   }
 
 
@@ -94,7 +113,7 @@ export class DungeonService {
     this.heroService.takeDamage(damage);
   }
 
-  private triggerTreasure() {
+  private triggerTreasure(): number {
     const money = Math.floor(Math.random() * 50) + 10;
     const event: GameEvent = {
       type: 'treasure',
@@ -102,16 +121,40 @@ export class DungeonService {
       value: money
     };
     this.eventService.addEvent(event);
+    return money;
   }
 
   stopExploration() {
-    if (this.explorationSubscription) {
+
+    if (this.isInDungeon$$.value) {
+      this.heroService.hero$.pipe(
+        switchMap(hero => {
+          hero.money += this.dungeonPerks$$.value.gold;
+          hero.experience += this.dungeonPerks$$.value.experience;
+          return of(hero);
+        })).subscribe(updatedHero => {
+        console.log(updatedHero);
+      });
+      let event: GameEvent;
+      combineLatest([
+        this.heroService.hero$,
+        this.heroService.hero$.pipe(map(hero => hero.experience.toString()))
+      ]).pipe(
+        map(([hero, experience]) => {
+          event = {
+            type: 'info',
+            description: `zdobyłeś ${hero.money} pieniędzy oraz ${experience} doświadczenia`,
+          };
+          return event;
+        })).subscribe(result => this.eventService.addEvent(result));
+
       this.isInDungeon$$.next(false);
-      this.explorationSubscription.unsubscribe();
+      this.triggerStopExploration$$.next();
+      // this.explorationSubscription.unsubscribe();
     }
   }
 
-  changeDifficulty(difficulty: DifficultyType) {
+  changeDifficulty(difficulty: Difficulty) {
     this.difficulty$$.next(difficulty);
   }
 }

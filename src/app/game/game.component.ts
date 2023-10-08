@@ -1,6 +1,6 @@
 import {Component} from '@angular/core';
 import {GameService} from '../services/game.service';
-import {DifficultyType} from "../interfaces/difficulty.type";
+import {Difficulty} from "../interfaces/difficulty";
 
 @Component({
   selector: 'app-game',
@@ -12,7 +12,7 @@ export class GameComponent {
 
   //currentDungeon?: Dungeon;
 
-  onDifficultySelected(difficulty: DifficultyType) {
+  onDifficultySelected(difficulty: Difficulty) {
     this.gameService.changeDifficulty(difficulty);
   }
 

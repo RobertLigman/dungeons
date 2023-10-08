@@ -19,6 +19,6 @@ export class EventService {
 
   addEvent(event: GameEvent) {
     console.log("event");
-    this.events$$.next([...this.events$$.value, event]);
+    this.events$$.next([event, ...this.events$$.value]);
   }
 }

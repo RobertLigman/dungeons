@@ -1,19 +1,22 @@
 <ng-container *ngIf="vm$ | async as vm">
-  <app-hero-stats [heroStats]="vm.hero"></app-hero-stats>
-  <app-dungeon-difficulty (difficultySelected)="onDifficultySelected($event)"></app-dungeon-difficulty>
-  <app-dungeon-progress [dungeon]="vm.dungeon"></app-dungeon-progress>
+  <app-hero-stats [heroStats]="vm.hero"/>
+  <app-dungeon-difficulty (difficultySelected)="onDifficultySelected($event)"/>
+
   <div *ngIf="vm.isInDungeon===false">
     <h2>Co chcesz zrobić?</h2>
-    <button (click)="startDungeonExploration()">Wyrusz do lochów</button>
+    <button (click)="startDungeonExploration()" [disabled]="vm.isHeroDead">Wyrusz do lochów</button>
     <button (click)="restUnderTheSky()">Odpocznij pod gołym niebem</button>
     <button (click)="stopResting()">Przerwij odpoczynek</button>
   </div>
 
   <div *ngIf="vm.isInDungeon">
+    <app-dungeon-progress [dungeon]="vm.dungeon"/>
     <h2>Jesteś w lochach!</h2>
     <button (click)="leaveDungeon()">zwiej z lochów</button>
   </div>
-
+  <div *ngIf="vm.hero.heroResting">
+    <app-hero-resting [heroHealth]="vm.hero.health"/>
+  </div>
   <!-- Sekcja logów -->
   <div>
     <h3>Logi:</h3>

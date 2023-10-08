@@ -8,6 +8,8 @@ import {HeroStatsComponent} from './game/hero-stats/hero-stats.component';
 import {DungeonProgressComponent} from './game/dungeon-progress/dungeon-progress.component';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {MatProgressBarModule} from "@angular/material/progress-bar";
+import {MatButtonToggleModule} from "@angular/material/button-toggle";
+import { HeroRestingComponent } from './game/hero-resting/hero-resting.component';
 
 @NgModule({
   declarations: [
@@ -15,12 +17,14 @@ import {MatProgressBarModule} from "@angular/material/progress-bar";
     GameComponent,
     DungeonDifficultyComponent,
     HeroStatsComponent,
-    DungeonProgressComponent
+    DungeonProgressComponent,
+    HeroRestingComponent
   ],
   imports: [
     BrowserModule,
     MatProgressBarModule,
-    BrowserAnimationsModule
+    BrowserAnimationsModule,
+    MatButtonToggleModule
   ],
   providers: [],
   bootstrap: [AppComponent]

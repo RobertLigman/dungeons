@@ -3,7 +3,7 @@ import {combineLatest} from 'rxjs';
 import {DungeonService} from './dungeon.service';
 import {EventService} from './event.service';
 import {HeroService} from './hero.service';
-import {DifficultyType} from "../interfaces/difficulty.type";
+import {Difficulty} from "../interfaces/difficulty";
 
 @Injectable({
   providedIn: 'root'
@@ -14,7 +14,8 @@ export class GameService {
     isInDungeon: this.dungeonService.isInDungeon$,
     hero: this.heroService.hero$,
     events: this.eventService.events$,
-    dungeon: this.dungeonService.dungeon$
+    dungeon: this.dungeonService.dungeon$,
+    isHeroDead: this.heroService.isHeroDead$
   })
 
   constructor(private heroService: HeroService, private dungeonService: DungeonService, private eventService: EventService) {
@@ -37,7 +38,7 @@ export class GameService {
     this.dungeonService.stopExploration();
   }
 
-  changeDifficulty(difficulty: DifficultyType) {
+  changeDifficulty(difficulty: Difficulty) {
     this.dungeonService.changeDifficulty(difficulty);
   }
 }

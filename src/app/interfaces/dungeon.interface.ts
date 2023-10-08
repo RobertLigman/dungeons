@@ -1,11 +1,11 @@
-import {DifficultyType} from "./difficulty.type";
+import {Difficulty} from "./difficulty";
 
 export class Dungeon {
-  difficulty: DifficultyType;
+  difficulty: Difficulty;
   explorationProgress: number;
   maxExploration: number;
 
-  constructor(difficulty: DifficultyType, maxExploration: number) {
+  constructor(difficulty: Difficulty, maxExploration: number) {
     this.difficulty = difficulty;
     this.explorationProgress = 0;
     this.maxExploration = maxExploration;

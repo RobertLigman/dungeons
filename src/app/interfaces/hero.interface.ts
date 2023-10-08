@@ -3,4 +3,5 @@ export interface Hero {
   experience: number;
   potions: number;
   money: number;
+  heroResting: boolean;
 }

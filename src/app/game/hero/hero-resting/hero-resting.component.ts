@@ -6,5 +6,5 @@ import {Component, Input} from '@angular/core';
   styleUrls: ['./hero-resting.component.css']
 })
 export class HeroRestingComponent {
-  @Input() heroHealth?: number;
+  @Input() heroHealth!: number;
 }

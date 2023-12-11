@@ -1,0 +1,7 @@
+{
+    "hero.eventDescription":"Odpoczywasz pod gołym niebem i regenerujesz {{healPerTick}} punktów zdrowia.",
+    "hero.fullHealth":"Wyzdrowiałeś i masz 100% zdrowia",
+    "dungeon.fight":"Walczysz z {{name}} i otrzymujesz {{damage}} obrażeń!",
+    "dungeon.treasure": "Znalazłeś skrzynię z {{money}} złotymi!",
+    "dungeon.finished": "zdobyłeś {{money}} pieniędzy oraz {{experience}} doświadczenia"
+}

@@ -1,12 +1,14 @@
 import {Injectable} from '@angular/core';
-import {BehaviorSubject, combineLatest, filter, finalize, map, of, Subject, switchMap, takeUntil, timer} from 'rxjs';
+import {BehaviorSubject, combineLatest, filter, finalize, map, of, Subject, switchMap, takeUntil, timer,take} from 'rxjs';
 import {tap} from 'rxjs/operators';
-import {Enemy} from "../interfaces/enemy.interface";
-import {GameEvent} from "../interfaces/game-event.interface";
-import {Dungeon} from "../interfaces/dungeon.interface";
-import {HeroService} from "./hero.service";
-import {EventService} from './event.service';
-import {Difficulty} from "../interfaces/difficulty";
+import {Enemy} from "../../common/enemy.interface";
+import {GameEvent} from "../../common/game-event.interface";
+import {Dungeon} from "../../common/dungeon.interface";
+import {HeroService} from "../hero/hero.service";
+import {EventService} from '../../common/event/event.service';
+import {Difficulty} from "../../common/difficulty";
+import { GameEventType } from 'src/app/common/GameEventType';
+import { TranslateService } from '@ngx-translate/core';
 
 @Injectable({
   providedIn: 'root'
@@ -26,7 +28,7 @@ export class DungeonService {
   //   return heroHp <= 0;
   // }
 
-  constructor(private heroService: HeroService, private eventService: EventService) {
+  constructor(private heroService: HeroService, private eventService: EventService,private translate: TranslateService) {
   }
 
 
@@ -105,21 +107,16 @@ export class DungeonService {
       damage: 5 * this.getDifficultyIndicator()
     };
     const damage = enemy.damage;
-    const event: GameEvent = {
-      type: 'fight',
-      description: `Walczysz z ${enemy.name} i otrzymujesz ${damage} obrażeń!`
-    };
+    const description = this.translate.instant("dungeon.fight",{name:enemy.name,damage})
+    const event = new GameEvent(GameEventType.FIGHT,description);
     this.eventService.addEvent(event)
     this.heroService.takeDamage(damage);
   }
 
   private triggerTreasure(): number {
     const money = Math.floor(Math.random() * 50) + 10;
-    const event: GameEvent = {
-      type: 'treasure',
-      description: `Znalazłeś skrzynię z ${money} złotymi!`,
-      value: money
-    };
+    const description = this.translate.instant("dungeon.treasure",{money})
+    const event = new GameEvent(GameEventType.TREASURE,description,money)
     this.eventService.addEvent(event);
     return money;
   }
@@ -140,11 +137,10 @@ export class DungeonService {
         this.heroService.hero$,
         this.heroService.hero$.pipe(map(hero => hero.experience.toString()))
       ]).pipe(
+        take(1),
         map(([hero, experience]) => {
-          event = {
-            type: 'info',
-            description: `zdobyłeś ${hero.money} pieniędzy oraz ${experience} doświadczenia`,
-          };
+          const description = this.translate.instant("dungeon.finished",{money:hero.money,experience});
+          event = new GameEvent(GameEventType.INFO,description)
           return event;
         })).subscribe(result => this.eventService.addEvent(result));
 

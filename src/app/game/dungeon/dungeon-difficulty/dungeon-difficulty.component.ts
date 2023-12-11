@@ -1,5 +1,5 @@
 import {Component, EventEmitter, Output} from '@angular/core';
-import {Difficulty} from "../../interfaces/difficulty";
+import {Difficulty} from "../../../common/difficulty";
 
 @Component({
   selector: 'app-dungeon-difficulty',
@@ -7,11 +7,13 @@ import {Difficulty} from "../../interfaces/difficulty";
   styleUrls: ['./dungeon-difficulty.component.css']
 })
 export class DungeonDifficultyComponent {
+  protected readonly Difficulty = Difficulty;
+
   @Output() difficultySelected = new EventEmitter<Difficulty>();
 
   selectDifficulty(difficulty: Difficulty) {
     this.difficultySelected.emit(difficulty);
   }
 
-  protected readonly Difficulty = Difficulty;
+
 }

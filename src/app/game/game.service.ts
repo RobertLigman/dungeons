@@ -1,9 +1,9 @@
 import {Injectable} from '@angular/core';
 import {combineLatest} from 'rxjs';
-import {DungeonService} from './dungeon.service';
-import {EventService} from './event.service';
-import {HeroService} from './hero.service';
-import {Difficulty} from "../interfaces/difficulty";
+import {DungeonService} from './dungeon/dungeon.service';
+import {EventService} from '../common/event/event.service';
+import {HeroService} from './hero/hero.service';
+import {Difficulty} from "../common/difficulty";
 
 @Injectable({
   providedIn: 'root'

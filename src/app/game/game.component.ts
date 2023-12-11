@@ -1,6 +1,6 @@
 import {Component} from '@angular/core';
-import {GameService} from '../services/game.service';
-import {Difficulty} from "../interfaces/difficulty";
+import {GameService} from './game.service';
+import {Difficulty} from "../common/difficulty";
 
 @Component({
   selector: 'app-game',
